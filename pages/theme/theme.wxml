@@ -1,0 +1,13 @@
+<!--pages/theme/theme.wxml-->
+<import src="../templates/products/products-tpl.wxml" />
+
+<view class="container">
+  <view class="theme-header">
+    <image src="{{themeProductsArray.head_img.url}}" mode="aspectFill" class="theme-header image"> </image>
+  </view>
+
+  <block > 
+    <template is="products" data="{{productsArray:themeProductsArray.product}}"> </template>
+  </block>  
+
+</view>

@@ -1,0 +1,47 @@
+<!--pages/home/home.wxml-->
+<import src="../templates/products/products-tpl.wxml" /> 
+<!-- 引用模板要import -->
+
+<view class="container">
+
+  <swiper indicator-dots="true" autoplay="true" class="swiper">          
+      <block wx:for="{{bannerArray}}"  wx:key="id">
+        <swiper-item class="banner-item" data-id="{{item.key_word}}" bindtap="toProductsItemTap"> <!-- key_word 代表点击banner要跳转到的product id-->
+          <image src="{{item.img.url}}" class="banner-item-image" mode="aspectFill">
+          </image> 
+        </swiper-item>
+      </block>
+  </swiper>
+
+  <view class="home-main">
+    <view class="home-main-theme">
+      <view class="home-main-header" >
+        <text>精选主题</text>
+      </view>
+      <view class="theme-box">
+        <block wx:for="{{themeArray}}" wx:key="id">
+          <view wx:if="{{index==2}}" class="theme-item big" bindtap="toThemesItemTap" data-id="{{item.id}}" data-name="{{item.name}}">
+            <image src="{{item.topic_img.url}}" mode="aspectFill"></image>
+          </view>
+          <view wx:else class="theme-item" bindtap="toThemesItemTap" data-id="{{item.id}}" data-name="{{item.name}}">
+            <image src="{{item.topic_img.url}}" mode="aspectFill"></image>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="home-main-products">
+      <view class="home-main-header" >最近新品</view>
+      <template is="products" data="{{productsArray:recentProductsArray}}">
+      <!-- 调用模板时，通过data将模板所需要的参数传递给模板wxml -->
+      </template>
+    </view>
+
+  </view>
+
+
+<!--   <view >
+    <button class="" open-type="contact"> 联系客服 </button>       
+  </view> -->
+
+</view>

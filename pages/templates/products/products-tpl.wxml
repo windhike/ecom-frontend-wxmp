@@ -1,0 +1,15 @@
+<template name="products">
+  <view class="products-box">
+    <block wx:for="{{productsArray}}" wx:key="id">
+      <view class="products-item" bindtap="toProductsItemTap" data-id="{{item.id}}">
+        <image class="products-image" src="{{item.main_img_url}}">
+        </image>
+        <view class="products-item-bottom">
+          <text class="name">{{item.name}}</text>
+          <!-- <text class="price">{{item.price}}</text> //两个text会显示在同一行，因为text是块状的，改成view和block都行 -->
+          <view class="price">￥{{item.price}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+</template>
