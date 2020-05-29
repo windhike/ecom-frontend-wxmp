@@ -31,6 +31,7 @@
 }
 .fixed-cart-view{
   font-size: 24rpx;
+  /* background-color: #E6979F; */
   background-color: #A6975A;
   color: white;
   position: absolute;
@@ -62,7 +63,7 @@
   height: 100rpx;
   margin: 30rpx auto;
   border-radius: 100rpx;
-  background-color: #A6975A;
+  background-color: #E6979F;
   color: #fff;
   display: flex;
   align-items: center;

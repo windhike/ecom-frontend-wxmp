@@ -2,6 +2,7 @@
 import {Order} from 'order-model.js';
 import {Address} from '../../utils/address.js';
 import {Cart} from '../cart/cart-model.js';
+import {Config} from '../../utils/config';
 var order = new Order();
 var address = new Address();
 var cart = new Cart();
@@ -15,7 +16,8 @@ Page({
     orderStatus:0,  // 就是DB order表中的 status 标志。 代表：$order->status = OrderStatusEnum::UNPAID; //订单执行状态： 1:未支付， 2：已支付，3：已发货 , 4: 已支付，但库存不足。
     //同时 orderStatus=0 表示前端刚生成的未提交的新订单。
     order_id:-1,
-    orderPrice:0
+    orderPrice:0,
+    isAuthorized:false, //用户是否已授权订阅消息
   },
 
   /**
@@ -103,7 +105,7 @@ Page({
     wx.chooseAddress({
       success: (wxAddrRes) => {
           // console.log(wxAddrRes);
-          // wxAddrRes.telNumber = '013342186975';//test用
+          wxAddrRes.telNumber = '013342186975';//test用
           var addressInfo={
             name:wxAddrRes.userName,
             mobile:wxAddrRes.telNumber,
@@ -223,7 +225,7 @@ _existOrderPay:function(){
 * params:
 * id - {int}订单id
 */
-_preOrderAndPay:function(id){
+_preOrderAndPay:function(id){ //原文为_execPay()
   if(!order.onPay) {
       this.showTips('支付提示','本产品仅用于演示，支付系统已屏蔽',true);//屏蔽支付，提示
       this.deleteProducts(); //将已经下单的商品从购物车删除
@@ -232,8 +234,31 @@ _preOrderAndPay:function(id){
   var that=this;
   order.preOrderAndPay(id,(statusCode)=>{
       if(statusCode!=0){
-          that.deleteProducts(); //将已经下单的商品从购物车删除   当状态为0时，表示
+          that.deleteProducts(); //将已经下单的商品从购物车删除   可能值 0:商品缺货等原因导致订单不能支付(后端或者wx服务器端preOrder处理就不让支付);  1: 支付失败或者支付取消(wx服务器端真正支付处理出错，此时会在DB生成记录，但状态为未支付的订单--orderStauts/DB order表中的status标志位=1--未支付)； 2:支付成功；
 
+          //用户下单时，请求订阅消息权限；
+          if(!that.data.isAuthorized){  
+            wx.requestSubscribeMessage({
+              tmplIds: [Config.templateMsgId],
+              success: function (res) {
+                if (res.errMsg == 'requestSubscribeMessage:ok'){
+                  that.setData({
+                    isAuthorized : true,
+                  });
+                  // wx.showToast({
+                  //   title: '订阅OK！',
+                  // })
+                }
+                // console.log(res)
+                //成功
+              },
+              fail(err) {
+                //失败
+                console.error(err);
+              }
+            })
+          }
+          //-------------------------------
           var flag = statusCode == 2; //flag==true，表示支付成功
           wx.navigateTo({
               url: '../pay-result/pay-result?id=' + id + '&flag=' + flag + '&from=order'

@@ -46,11 +46,25 @@ class Cart extends Base{
         }
       }
       else{
-        newCartData=cartData;
+        newCartData=cartData;         
       }
     }
     return newCartData;
 };
+
+  getCartDataFromServer(callback){
+    // var that=this;
+    var params = {
+      url: 'cart',
+      method:'GET',
+      sCallback:function (cartData) {  //回调函数的意思：当success 得到异步返回结果时，不能直接return res，而是调用callback 函数
+      callback && callback(cartData);
+      }                 
+    };
+    this.request(params);
+  };
+
+
 
 /*
 *获得购物车商品总数目,包括分类和不分类
@@ -97,7 +111,25 @@ getCartTotalCounts(countSelectedOnly){
 
 updateLocalCartData(cartData){
   wx.setStorageSync(this._storageKeyName,cartData);  //更新本地缓存
-  // return cartData;
+   // return cartData;
+};
+
+updateServerCartData(cartData,callback){
+  var params= {
+    url: 'cart',
+    method:'POST',
+    data:{
+      'products':cartData, //如果cart是trueEmpty，则删除DB所有记录；
+    },//生成和placeOrder一样的数据格式
+    sCallback:function (res) {  //回调函数的意思：当success 得到异步返回结果时，不能直接return res，而是调用callback 函数
+      callback && callback(true,res); //callBack && ... 是指先判断callback是否为空/false，如果不是则执行... 这里如果是success直接返回一个True，加res结果（可选）
+      // console.log(res);
+    },
+    eCallback:function (res) {
+      callback && callback(false,res); //这里如果是error直接返回一个false，加res结果（可选）
+    }      
+  };
+  this.request(params);
 };
 
 /*
@@ -114,7 +146,11 @@ updateLocalCartData(cartData){
             cartData.splice(hasInfo.index, 1);  //删除数组某一项
         }
     }
+    if(cartData.length==0){
+      wx.setStorageSync('trueEmpty',true);
+    }
     wx.setStorageSync(this._storageKeyName,cartData);
+    
 };
 
  /*

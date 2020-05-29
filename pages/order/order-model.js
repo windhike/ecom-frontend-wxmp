@@ -17,7 +17,7 @@ class Order extends Base{
   placeOrder(param,callback){
     var that=this;
     var allParams = {
-        url: 'order',
+        url: 'order'+'?XDEBUG_SESSION_START=19701',
         method:'post',
         data:{products:param},
         sCallback: function (data) {
@@ -68,13 +68,16 @@ class Order extends Base{
     }
 
     /*获得所有订单,pageIndex 从1开始*/
-    getOrders(pageIndex,callback){
+    getOrders(pageIndex,statusList,callback){
         var allParams = {
-            url: 'order/by_user',
-            data:{page:pageIndex},
+            url: 'order/by_user'+'?XDEBUG_SESSION_START=13864',
+            data:{
+                page:pageIndex,
+                statusList:statusList //1,未支付  2，已支付  3，已发货，4已支付，但库存不足;5已完成
+            },
             method:'get',
             sCallback: function (data) {
-                callback && callback(data);  //1 未支付  2，已支付  3，已发货，4已支付，但库存不足
+                callback && callback(data);  
              }
         };
         this.request(allParams);

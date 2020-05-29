@@ -107,7 +107,7 @@
 
 /*合计*/
 .all-accounts-box{
-    background-color:#A6975A;
+    background-color:#F5F6F5;
     color: #fff;
 }
 .all-accounts-box>view{
@@ -126,9 +126,10 @@
 
 .all-price-submit{
     width: 60%;
+    color: #A6975A;
 }
 .all-price-submit.disabled{
-    color: #e6e6e6;
+    color: #c6c6c6;
 }
 .accounts-btn,.price-text,.arrow-icon{
     display: flex;

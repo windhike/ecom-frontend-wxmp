@@ -19,7 +19,8 @@
 }
 .category-title-text{
     font-size: 24rpx;
-    color:#A6975A;
+    /* color:#E6979F; */
+    color:black;
 }
 .category-title-text::before,.category-title-text::after{
     content: '--------';

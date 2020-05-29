@@ -18,30 +18,63 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    var localCartData = cart.getCartDataFromLocal();   
+ 
+    if(localCartData.length==0){
+      cart.getCartDataFromServer(res=>{
+        var serverCartData = res;
+        if(serverCartData.length!=0){
+          wx.setStorageSync('cart',serverCartData);  //更新本地缓存
+          wx.setStorageSync('trueEmpty', false);//判断cart是否trueEmpty，防止错误删除服务器DB数据；只有trueEmpty才会删；
+        }
+        else{
+          wx.setStorageSync('trueEmpty', true);
+        }
 
+        var calcResult = this._calcSelectedPriceAndCounts(serverCartData);
+        this.setData({
+          selectedCounts:calcResult.selectedCounts,
+          selectedTypes:calcResult.selectedTypes,
+          selectedTotalPrice:calcResult.selectedTotalPrice,
+          cartData:serverCartData,
+        });
+      })             
+    }
+    else{
+      wx.setStorageSync('trueEmpty', false);
+      var calcResult = this._calcSelectedPriceAndCounts(localCartData);
+      this.setData({
+        selectedCounts:calcResult.selectedCounts,
+        selectedTypes:calcResult.selectedTypes,
+        selectedTotalPrice:calcResult.selectedTotalPrice,
+        cartData:localCartData,
+      });
+    }   
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+    
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    var cartData = cart.getCartDataFromLocal();
-    // var cartSelectedCounts = cart.getCartTotalCounts(true); //true means selected Only
-    var calcResult = this._calcSelectedPriceAndCounts(cartData);
 
-    this.setData({
-      selectedCounts:calcResult.selectedCounts,
-      selectedTypes:calcResult.selectedTypes,
-      selectedTotalPrice:calcResult.selectedTotalPrice,
-      cartData:cartData,
-    });
+    var localCartData = cart.getCartDataFromLocal();   
+ 
+    // if(localCartData.length!=0){
+      var calcResult = this._calcSelectedPriceAndCounts(localCartData);
+      this.setData({
+        selectedCounts:calcResult.selectedCounts,
+        selectedTypes:calcResult.selectedTypes,
+        selectedTotalPrice:calcResult.selectedTotalPrice,
+        cartData:localCartData,
+      });
+    // }
   },
 
   _calcSelectedPriceAndCounts:function(cartData){
